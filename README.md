@@ -11,6 +11,9 @@ npm install cheerio
 ```
 
 ## 使用
+```bash
+node server.js
+```
 默认监听`8888`端口，需要修改的话请编辑`server.js`  
 
 ### 解析单个本子
