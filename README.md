@@ -22,7 +22,7 @@ node server.js
 
 ### 解析一整页本子
 例如需要解析`https://nhentai.net/language/chinese/`的所有本子  
-那么访问`http://yourip:8888/?url=https://nhentai.net/language/chinese/`即可  
+那么访问`http://yourip:8888/?url=https://nhentai.net/language/chinese/`即可  
 当然，只会解析当前这页，URL 是哪一页就解析哪一页，后期可能会考虑加一个批量页数解析
 
 ## 返回
