@@ -1,11 +1,10 @@
 var cheerio = require('cheerio');
-var nhHttp = require('https');
 var nhURL = 'https://nhentai.net/g/';
 var nhHost = 'https://nhentai.net';
 //var nhImgURL = 'https://i.nhentai.net/galleries/';
 var nhReg = /\/([0-9]+)\//g;
 
-var bResults = [];
+var retry = 5;
 
 //对本子页html解析
 function nhResolve(html) {
@@ -21,7 +20,6 @@ function nhResolve(html) {
     var pages = $('#thumbnail-container .thumb-container').length;
     //获取本子BaseURL
     var baseURL = $($('#thumbnail-container .thumb-container img')[0]).attr('data-src');
-    //console.log(baseURL);
     var searchRes = nhReg.exec(baseURL);
     var nhImgID = 0;
     if (searchRes !== null) {
@@ -37,11 +35,13 @@ function nhResolve(html) {
         pages: pages,
         imgID: nhImgID
     };
+    console.log(bResult);
     return bResult;
 }
 
 //批量解析递归函数
-function nhResolveBatchUnit(hrefs,i,callback){
+function nhResolveBatchUnit(hrefs,i,results,callback){
+    var nhHttp = require('https');
     //所有都解析完了就执行回调
     if(i >= hrefs.length){
         if (callback && typeof(callback) === "function") {
@@ -55,25 +55,24 @@ function nhResolveBatchUnit(hrefs,i,callback){
             html += data;
         });
         res.on('end', function() {
-            //console.log(hrefs[i]);
             var tempResult = nhResolve(html);
-            for(var j=0;j<10 && tempResult === null;j++){
+            for(var j=0;j<retry && tempResult === null;j++){
                 tempResult = nhResolve(html);
             }
             if(tempResult === null){
-                nhResolveBatchUnit(hrefs,i,callback);
+                nhResolveBatchUnit(hrefs,i,results,callback);
             }else{
                 //储存解析结果
-                bResults.push(tempResult);
+                results.push(tempResult);
                 //递归继续解析
-                nhResolveBatchUnit(hrefs,i+1,callback);
+                nhResolveBatchUnit(hrefs,i+1,results,callback);
             }
         });
     });
 }
 
 //批量解析
-function nhResolveBatch(html,callback){
+function nhResolveBatch(html,results,callback){
     $ = cheerio.load(html, {
         decodeEntities: false
     });
@@ -82,7 +81,7 @@ function nhResolveBatch(html,callback){
     for(var i=0;i<as.length;i++){
         hrefs.push(nhHost + $(as[i]).attr('href'));
     }
-    nhResolveBatchUnit(hrefs,0,function(){
+    nhResolveBatchUnit(hrefs,0,results,function(){
         if (callback && typeof(callback) === "function") {
             callback();
         }
@@ -91,7 +90,9 @@ function nhResolveBatch(html,callback){
 
 //单次解析
 exports.single = function(gid,callback) {
+    console.log("Single resolving...");
     //获取网页内容
+    var nhHttp = require('https');
     nhHttp.get(nhURL + gid + '/', function(res) {
         var html = '';
         res.on('data', function(data) {
@@ -99,8 +100,13 @@ exports.single = function(gid,callback) {
         });
         //将解析结果传给回调函数
         res.on('end', function() {
+            console.log("Done.");
             if (callback && typeof(callback) === "function") {
-                callback(nhResolve(html));
+                var tempResult = nhResolve(html);
+                for(var j=0;j<retry && tempResult === null;j++){
+                    tempResult = nhResolve(html);
+                }
+                callback(tempResult);
             }
         });
     });
@@ -108,7 +114,10 @@ exports.single = function(gid,callback) {
 
 //批量解析
 exports.multi = function(weburl,callback) {
+    //结果数组
+    var bResults = Array();
     //获取网页内容
+    var nhHttp = require('https');
     nhHttp.get(weburl, function(res) {
         var html = '';
         res.on('data', function(data) {
@@ -117,7 +126,7 @@ exports.multi = function(weburl,callback) {
         //将解析结果传给回调函数
         res.on('end', function() {
             if (callback && typeof(callback) === "function") {
-                nhResolveBatch(html,function(){
+                nhResolveBatch(html,bResults,function(){
                     callback(bResults);
                 });
             }
