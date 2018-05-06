@@ -3,18 +3,18 @@
 尚处于测试阶段，还有很多需要改进的内容  
 （我知道我代码写的很烂啦~
 
-## 需求
-### cheerio
-https://github.com/cheeriojs/cheerio
+## 部署
 ```bash
-npm install cheerio
+git clone https://github.com/YKilin/nhentai-resolution.git
+cd nhentai-resolution
+npm install .
 ```
 
 ## 使用
 ```bash
 node server.js
 ```
-默认监听`8888`端口，需要修改的话请编辑`server.js`  
+默认监听`8888`端口，需要修改的话请编辑`server.js`
 
 ### 解析单个本子
 例如需要解析`https://nhentai.net/g/229687/`的本子  
@@ -62,7 +62,7 @@ https://i.nhentai.net/galleries/1208826/26.jpg
 ```
 其中`1208826`即为本子图片ID  
 
-注意：本子图片格式并不是只有`jpg`，还有可能是`png`甚至`gif`（有些汉化组有时候会放一些搞笑的gif进来……），在下载时如果遇到404就需要进行额外判断了
+注意：本子图片格式并不是只有`jpg`，还有可能是`png`甚至`gif`（有些汉化组会放一些gif进来……），在下载时如果遇到404就需要进行额外判断了
 
 ## TODO
 - [ ] 优化解析结果表示
