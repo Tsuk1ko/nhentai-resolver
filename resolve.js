@@ -1,26 +1,31 @@
-var cheerio = require('cheerio');
 var nhURL = 'https://nhentai.net/g/';
 var nhHost = 'https://nhentai.net';
 //var nhImgURL = 'https://i.nhentai.net/galleries/';
-var nhReg = /\/([0-9]+)\//g;
 
 var retry = 5;
 
 //对本子页html解析
 function nhResolve(html) {
+    var cheerio = require('cheerio');
+    var nhReg = /\/([0-9]+)\//g;
+    //console.log(html);
     $ = cheerio.load(html, {
         decodeEntities: false
     });
     //获取信息
     var tittle1 = $('#info h1').html();
+    //console.log(tittle1);
     if (tittle1 === null) {
         return null;
     }
     var tittle2 = $('#info h2').html();
+    //console.log(tittle2);
     var pages = $('#thumbnail-container .thumb-container').length;
     //获取本子BaseURL
     var baseURL = $($('#thumbnail-container .thumb-container img')[0]).attr('data-src');
+    //console.log(baseURL);
     var searchRes = nhReg.exec(baseURL);
+    //console.log(searchRes);
     var nhImgID = 0;
     if (searchRes !== null) {
         nhImgID = searchRes[0].replace(/\//g, '');
@@ -73,6 +78,7 @@ function nhResolveBatchUnit(hrefs,i,results,callback){
 
 //批量解析
 function nhResolveBatch(html,results,callback){
+    var cheerio = require('cheerio');
     $ = cheerio.load(html, {
         decodeEntities: false
     });
@@ -89,6 +95,7 @@ function nhResolveBatch(html,results,callback){
 }
 
 //单次解析
+//将会传给回调函数一个结果（仅仅为单个对象）
 exports.single = function(gid,callback) {
     console.log("Single resolving...");
     //获取网页内容
@@ -113,6 +120,7 @@ exports.single = function(gid,callback) {
 };
 
 //批量解析
+//将会传给回调函数一个结果数组（结果对象的数组）
 exports.multi = function(weburl,callback) {
     //结果数组
     var bResults = Array();
