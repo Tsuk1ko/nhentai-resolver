@@ -34,7 +34,7 @@ npm start
 ```json
 {
 	"code": 0,
-	"date": 1526147116634,
+	"time": 1103,
 	"results": [{
 		"gid": "232979",
 		"tittle1": "(C78) [Yume no Kyoukai (Suzuneko.)] Kougetsu Shimai - Ni no Tsuki (Touhou Project) [Chinese] [冴月麟个人汉化]",
