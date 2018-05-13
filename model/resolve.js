@@ -2,7 +2,7 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-12 19:18:41 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-13 10:45:56
+ * @Last Modified time: 2018-05-13 13:17:09
  */
 const nhURL = 'https://nhentai.net/g/';
 const nhHost = 'https://nhentai.net';
@@ -66,11 +66,28 @@ function nhResolve(gid, html) {
 	var tittle2 = $('#info h2').html();
 	var pages = $('#thumbnail-container .thumb-container').length;
 
+	//提取tag
+	var tags = {};
+	$('.tag .count').remove();
+	var tag_containers = $('#tags .tag-container.field-name:not(.hidden)');
+	for (var i = 0; i < tag_containers.length; i++) {
+		var tag_container = $($(tag_containers)[i]);
+		var tags_span = tag_container.find('.tag');
+		var tags_group_array = Array();
+		for (var j = 0; j < tags_span.length; j++) {
+			tags_group_array.push($($(tags_span)[j]).html().replace(/[^a-zA-Z ]|( $)/g, ''));
+		}
+		console.log(tags_group_array);
+		tag_container.children('.tags').remove();
+		var tag_group_name = tag_container.html().replace(/[^a-zA-Z ]|( $)/g, '');
+		tags[tag_group_name] = tags_group_array;
+	}
+
 	var baseURL = $($('#thumbnail-container .thumb-container img')[0]).attr('data-src');
 	var searchRes = nhReg.exec(baseURL);
 	var nhImgID = searchRes[0].replace(/\//g, '');
 
-	return new NHResult(gid, tittle1, tittle2, pages, nhImgID);
+	return new NHResult(gid, tittle1, tittle2, tags, pages, nhImgID);
 }
 
 

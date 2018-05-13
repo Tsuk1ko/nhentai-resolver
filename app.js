@@ -19,12 +19,12 @@ app.use(async ctx => {
 		if (typeof (gid) !== "undefined") {
 			await nhentai.single(gid, true).then(nhr => {
 				response = nhr;
-				response.setTime(Date.now() - st);
+				response.msg.time = Date.now() - st;
 			});
 		} else if (typeof (url) !== "undefined") {
 			await nhentai.multi(url, true).then(nhr => {
 				response = nhr;
-				response.setTime(Date.now() - st);
+				response.msg.time = Date.now() - st;
 			});
 		}
 	}

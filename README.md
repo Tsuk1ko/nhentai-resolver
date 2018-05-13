@@ -34,43 +34,57 @@ npm start
 ```json
 {
 	"code": 0,
-	"time": 1103,
+	"msg": {
+		"time": 2550
+	},
 	"results": [{
-		"gid": "232979",
-		"tittle1": "(C78) [Yume no Kyoukai (Suzuneko.)] Kougetsu Shimai - Ni no Tsuki (Touhou Project) [Chinese] [冴月麟个人汉化]",
-		"tittle2": "(C78) [夢の境界 (Suzu猫。)] 紅月姉妹 弐の月 (東方Project) [中国翻訳]",
-		"pages": 16,
-		"iid": "1223811"
+		"gid": "233022",
+		"tittle1": "[100yenMoFA (Mirino)] Suwa Nee-chan ni Kawaigarareru Hon Suwa Shota Bangaihen 11 (Touhou Project) [Chinese] [CE家族社] [Digital]",
+		"tittle2": "[100円外務省 (みりの)] すわ姉ちゃんにかわいがられる本 すわショタ番外編11 (東方Project) [中国翻訳] [DL版]",
+		"tags": {
+			"Parodies": ["touhou project"],
+			"Characters": ["suwako moriya"],
+			"Tags": ["lolicon", "stockings", "sole female", "sole male", "shotacon", "multiwork series"],
+			"Artists": ["mirino"],
+			"Groups": ["yenmofa"],
+			"Languages": ["translated", "chinese"],
+			"Categories": ["doujinshi"]
+		},
+		"pages": 32,
+		"iid": "1223998",
+		"cover": "https://t.nhentai.net/galleries/1223998/cover.jpg"
 	}]
 }
 ```
  
-| 键        | 值含义                                              |
-| --------- | --------------------------------------------------- |
-| code      | 0:成功,10:出现了部分错误,11:完全错误,20:参数不正确  |
-| time      | 解析耗时                            |
-| results   | 结果数组，在解析单个本子的情况下数组长度为1         |
-| tittle1   | 本子名字（罗马音）                                  |
-| tittle2   | 本子名字（原始语言）                                |
-| pages     | 本子页数                                            |
-| iid       | 本子图片ID                                          |
+| 键        | 值含义                                                                           |
+| --------- | -------------------------------------------------------------------------------- |
+| code      | 0:成功；10:出现了部分错误；11:完全错误；20:参数不正确                            |
+| msg       | 消息对象，默认为空，你可以在里面存放自己想放的消息，例如本示例存放了解析耗时(ms) |
+| results   | 结果数组，在解析单个本子的情况下数组长度为1                                      |
+| tittle1   | 本子名字（罗马音）                                                               |
+| tittle2   | 本子名字（原始语言）                                                             |
+| tags      | 标签                                                                             |
+| pages     | 本子页数                                                                         |
+| iid       | 本子图片ID                                                                       |
+| cover     | 本子封面缩略图                                                                   |
 
 ### 关于本子图片ID
-本子原图都会是类似这样的 URL 格式
+以上面的解析结果举例，本子原图都会是类似这样的 URL 格式
 ```
-https://i.nhentai.net/galleries/1223811/1.jpg
-https://i.nhentai.net/galleries/1223811/2.jpg
-https://i.nhentai.net/galleries/1223811/3.jpg
+https://i.nhentai.net/galleries/1223998/1.jpg
+https://i.nhentai.net/galleries/1223998/2.jpg
+https://i.nhentai.net/galleries/1223998/3.jpg
 ...
-https://i.nhentai.net/galleries/1223811/26.jpg
+https://i.nhentai.net/galleries/1223998/32.jpg
 ```
-其中`1223811`即为本子图片ID  
+其中`1223998`即为本子图片ID  
 
-注意：本子图片格式并不是只有`jpg`，还有可能是`png`甚至`gif`（有些汉化组会放一些gif进来……），在下载时如果遇到404就需要进行额外判断了
+注意：本子图片格式并不是只有`jpg`（虽然大部分都是），还有可能是`png`甚至`gif`（有些汉化组会放一些gif进来……），在下载时如果遇到404就需要进行额外判断了
 
 ## TODO
 - [x] 重写，优化代码结构
-- [x] 优化解析结果表示
+- [x] 增加解析结果涵盖范围
 - [ ] 加入 Mysql 数据库操作，缓存解析记录（可选）
 - [ ] 自动下载模块
 - [ ] 下载完成后访问回调 URL
