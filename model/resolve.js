@@ -2,7 +2,7 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-12 19:18:41 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-13 01:44:17
+ * @Last Modified time: 2018-05-13 10:45:56
  */
 const nhURL = 'https://nhentai.net/g/';
 const nhHost = 'https://nhentai.net';
@@ -38,7 +38,7 @@ async function getHrefsFromPage(url) {
 	var $ = cheerio.load(html, {
 		decodeEntities: false
 	});
-	
+
 	var hrefs = [];
 	var as = $('.cover');
 	for (var i = 0; i < as.length; i++) {
@@ -78,21 +78,26 @@ function nhResolve(gid, html) {
  * 进行单次解析
  * 
  * @param {number} gid 本子id
+ * @param {boolean} withResponse 是否套上专用response
  * @returns 单个解析结果
  */
-exports.single = async gid => {
+exports.single = async (gid, withResponse = false) => {
 	var response;
 	//获取本子页html内容
 	await gethttp.https(gidToUrl(gid)).then(html => {
 		//解析
 		var result = nhResolve(gid, html);
-		var code = 0;
-		//无效结果返回错误代码
-		if (!result.isValid()) {
-			code = 11;
+		if (withResponse) {
+			var code = 0;
+			//无效结果返回错误代码
+			if (!result.isValid()) {
+				code = 11;
+			}
+			//创建返回json
+			response = new NHResponse(code, result);
+		} else {
+			response = result;
 		}
-		//创建返回json
-		response = new NHResponse(code, result);
 	});
 	return response;
 };
@@ -102,9 +107,10 @@ exports.single = async gid => {
  * 进行批量解析
  * 
  * @param {string} url 含有多个本子的页面链接
+ * @param {boolean} withResponse 是否套上专用response
  * @returns 解析结果数组
  */
-exports.multi = async url => {
+exports.multi = async (url, withResponse) => {
 	var results = Array();
 	var hrefs;
 	//获取本子页所有链接
@@ -123,20 +129,24 @@ exports.multi = async url => {
 		});
 	}
 
-	//检测结果完整性
-	var check = 0;
-	for (var result of results) {
-		if (!result.isValid()) {
-			check++;
+	if (withResponse) {
+		//检测结果完整性
+		var check = 0;
+		for (var result of results) {
+			if (!result.isValid()) {
+				check++;
+			}
 		}
-	}
 
-	var code = 0;
-	//结果完全无效&部分无效
-	if (check == results.lengh) {
-		code = 11;
-	} else if (check > 0) {
-		code = 10;
+		var code = 0;
+		//结果完全无效&部分无效
+		if (check == results.lengh) {
+			code = 11;
+		} else if (check > 0) {
+			code = 10;
+		}
+		return new NHResponse(code, results);
+	} else {
+		return results;
 	}
-	return new NHResponse(code, results);
 };
