@@ -18,7 +18,7 @@ npm install
 ```bash
 npm start
 ```
-默认监听`8888`端口，需要修改的话请编辑`app.js`
+默认监听`8888`端口，需要修改的话请编辑`config.js`
 
 ### 解析单个本子
 例如需要解析`https://nhentai.net/g/229687/`的本子  

@@ -1,16 +1,24 @@
+/*
+ * @Author: JindaiKirin 
+ * @Date: 2018-05-13 13:39:00 
+ * @Last Modified by: JindaiKirin
+ * @Last Modified time: 2018-05-13 14:05:36
+ */
 const Koa = require('koa');
 const app = new Koa();
 
 const NHResponse = require('./class/nhresponse');
 const nhentai = require('./model/resolve');
+const NHConfig = require('./config');
 
 app.use(async ctx => {
 	//计时
 	var st = Date.now();
 	//query
 	var query = ctx.query;
-	//返回json
+	//默认返回的json
 	var response = new NHResponse();
+	response.msg.text = "Invalid query! Please see https://github.com/YKilin/nhentai-resolution";
 
 	if (query !== null) {
 		var gid = query.gid;
@@ -31,4 +39,4 @@ app.use(async ctx => {
 	ctx.body = response;
 });
 
-app.listen(8888);
+app.listen(NHConfig.port);
