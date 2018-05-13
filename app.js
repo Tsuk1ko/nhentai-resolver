@@ -2,14 +2,20 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-13 13:39:00 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-13 14:05:36
+ * @Last Modified time: 2018-05-13 20:01:26
  */
 const Koa = require('koa');
 const app = new Koa();
 
+const NHsql = require('./model/nhsql');
 const NHResponse = require('./class/nhresponse');
 const nhentai = require('./model/resolve');
 const NHConfig = require('./config');
+
+//数据库测试
+if(NHConfig.enable_cache){
+	NHsql.test();
+}
 
 app.use(async ctx => {
 	//计时

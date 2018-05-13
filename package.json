@@ -5,7 +5,8 @@
   "main": "app.js",
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
-    "koa": "^2.5.1"
+    "koa": "^2.5.1",
+    "mysql-co": "0.0.4"
   },
   "devDependencies": {},
   "scripts": {

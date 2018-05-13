@@ -1,0 +1,14 @@
+class NHConfig{}
+
+//api监听端口
+NHConfig.port = 8888;
+
+//数据库配置
+//只有 enable_cache 为 true 才能开启缓存功能，并使用数据库缓存解析结果
+NHConfig.enable_cache = false;
+NHConfig.mysql_host = 'localhost';
+NHConfig.mysql_database = 'nhentai';
+NHConfig.mysql_user = 'root';
+NHConfig.mysql_passwd = '123456789';
+
+module.exports = NHConfig;

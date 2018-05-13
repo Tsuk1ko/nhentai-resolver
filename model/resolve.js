@@ -2,7 +2,7 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-12 19:18:41 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-13 13:17:09
+ * @Last Modified time: 2018-05-13 20:26:44
  */
 const nhURL = 'https://nhentai.net/g/';
 const nhHost = 'https://nhentai.net';
@@ -12,6 +12,8 @@ const cheerio = require('cheerio');
 const gethttp = require('./gethttp');
 const NHResult = require('../class/nhresult');
 const NHResponse = require('../class/nhresponse');
+const NHsql = require('./nhsql');
+const NHConfig = require('../config');
 
 /**
  * 给定本子id，得到本子URL
@@ -55,7 +57,27 @@ async function getHrefsFromPage(url) {
  * @param {string} html nhentai本子网页内容
  * @returns 这个网页的本子的解析结果
  */
-function nhResolve(gid, html) {
+async function nhResolve(gid) {
+	//先看看数据库有缓存没
+	var sql, cache;
+	if (NHConfig.enable_cache) {
+		sql = new NHsql();
+		await sql.getCache(gid).then(nhr => {
+			cache = nhr;
+			sql.close();
+		});
+		if (cache.isValid()) {
+			cache.cache = true;
+			return cache;
+		}
+	}
+
+	//获取本子页html内容
+	var html;
+	await gethttp.https(gidToUrl(gid)).then(async nhhtml => {
+		html = nhhtml;
+	});
+
 	var nhReg = /\/([0-9]+)\//g;
 	var $ = cheerio.load(html, {
 		decodeEntities: false
@@ -73,21 +95,33 @@ function nhResolve(gid, html) {
 	for (var i = 0; i < tag_containers.length; i++) {
 		var tag_container = $($(tag_containers)[i]);
 		var tags_span = tag_container.find('.tag');
+		//tag成员
 		var tags_group_array = Array();
 		for (var j = 0; j < tags_span.length; j++) {
 			tags_group_array.push($($(tags_span)[j]).html().replace(/[^a-zA-Z ]|( $)/g, ''));
 		}
-		console.log(tags_group_array);
 		tag_container.children('.tags').remove();
+		//tag标题
 		var tag_group_name = tag_container.html().replace(/[^a-zA-Z ]|( $)/g, '');
 		tags[tag_group_name] = tags_group_array;
 	}
 
 	var baseURL = $($('#thumbnail-container .thumb-container img')[0]).attr('data-src');
 	var searchRes = nhReg.exec(baseURL);
-	var nhImgID = searchRes[0].replace(/\//g, '');
+	var nhImgID = parseInt(searchRes[0].replace(/\//g, ''));
 
-	return new NHResult(gid, tittle1, tittle2, tags, pages, nhImgID);
+	var result = new NHResult(gid, tittle1, tittle2, tags, pages, nhImgID);
+
+	//缓存至数据库
+	if (NHConfig.enable_cache) {
+		sql = new NHsql();
+		await sql.addCache(gid, result).then(() => {
+			sql.close;
+		});
+		result.cache = false;
+	}
+
+	return result;
 }
 
 
@@ -99,23 +133,25 @@ function nhResolve(gid, html) {
  * @returns 单个解析结果
  */
 exports.single = async (gid, withResponse = false) => {
+	if (typeof gid != "number") gid = parseInt(gid);
 	var response;
-	//获取本子页html内容
-	await gethttp.https(gidToUrl(gid)).then(html => {
-		//解析
-		var result = nhResolve(gid, html);
-		if (withResponse) {
-			var code = 0;
-			//无效结果返回错误代码
-			if (!result.isValid()) {
-				code = 11;
-			}
-			//创建返回json
-			response = new NHResponse(code, result);
-		} else {
-			response = result;
-		}
+	var result;
+	//获取解析结果
+	await nhResolve(gid).then(r => {
+		result = r;
 	});
+	if (withResponse) {
+		var code = 0;
+		//无效结果返回错误代码
+		if (!result.isValid()) {
+			code = 11;
+		}
+		//创建返回json
+		response = new NHResponse(code, result);
+	} else {
+		response = result;
+	}
+
 	return response;
 };
 
@@ -138,12 +174,10 @@ exports.multi = async (url, withResponse) => {
 	//对每个链接都进行解析
 	for (var href of hrefs) {
 		var nhReg = /\/([0-9]+)\//g;
-		var gid = nhReg.exec(href);
-		//获取本子页html内容
-		await gethttp.https(href).then(html => {
-			//解析结果加入结果数组
-			results.push(nhResolve(gid, html));
-		});
+		var gid = parseInt(nhReg.exec(href)[1]);
+		await nhResolve(gid).then(r => {
+			results.push(r);
+		})
 	}
 
 	if (withResponse) {
