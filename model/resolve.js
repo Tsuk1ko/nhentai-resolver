@@ -2,7 +2,7 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-12 19:18:41 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-13 20:26:44
+ * @Last Modified time: 2018-05-14 18:34:55
  */
 const nhURL = 'https://nhentai.net/g/';
 const nhHost = 'https://nhentai.net';
@@ -14,6 +14,8 @@ const NHResult = require('../class/nhresult');
 const NHResponse = require('../class/nhresponse');
 const NHsql = require('./nhsql');
 const NHConfig = require('../config');
+
+var enable_cache = NHConfig.enable_cache;
 
 /**
  * 给定本子id，得到本子URL
@@ -57,14 +59,13 @@ async function getHrefsFromPage(url) {
  * @param {string} html nhentai本子网页内容
  * @returns 这个网页的本子的解析结果
  */
-async function nhResolve(gid) {
+async function nhResolve(gid, nhsql = (enable_cache ? new NHsql : null), autoCloseSql = true) {
 	//先看看数据库有缓存没
-	var sql, cache;
-	if (NHConfig.enable_cache) {
-		sql = new NHsql();
-		await sql.getCache(gid).then(nhr => {
+	if (enable_cache) {
+		var cache;
+		await nhsql.getCache(gid).then(nhr => {
 			cache = nhr;
-			sql.close();
+			if (autoCloseSql) nhsql.close();
 		});
 		if (cache.isValid()) {
 			cache.cache = true;
@@ -113,10 +114,10 @@ async function nhResolve(gid) {
 	var result = new NHResult(gid, tittle1, tittle2, tags, pages, nhImgID);
 
 	//缓存至数据库
-	if (NHConfig.enable_cache) {
-		sql = new NHsql();
-		await sql.addCache(gid, result).then(() => {
-			sql.close;
+	if (enable_cache) {
+		nhsql = new NHsql();
+		await nhsql.addCache(gid, result).then(() => {
+			if (autoCloseSql) nhsql.close;
 		});
 		result.cache = false;
 	}
@@ -172,13 +173,15 @@ exports.multi = async (url, withResponse) => {
 	});
 
 	//对每个链接都进行解析
+	var nhsql = new NHsql();
 	for (var href of hrefs) {
 		var nhReg = /\/([0-9]+)\//g;
 		var gid = parseInt(nhReg.exec(href)[1]);
-		await nhResolve(gid).then(r => {
+		await nhResolve(gid, nhsql, false).then(r => {
 			results.push(r);
 		})
 	}
+	nhsql.close();
 
 	if (withResponse) {
 		//检测结果完整性
