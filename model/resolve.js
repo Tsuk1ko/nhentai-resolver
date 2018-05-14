@@ -2,7 +2,7 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-12 19:18:41 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-14 18:34:55
+ * @Last Modified time: 2018-05-15 02:56:04
  */
 const nhURL = 'https://nhentai.net/g/';
 const nhHost = 'https://nhentai.net';
@@ -12,10 +12,9 @@ const cheerio = require('cheerio');
 const gethttp = require('./gethttp');
 const NHResult = require('../class/nhresult');
 const NHResponse = require('../class/nhresponse');
-const NHsql = require('./nhsql');
-const NHConfig = require('../config');
+const NHSql = require('./nhsql');
 
-var enable_cache = NHConfig.enable_cache;
+var enable_cache = global.nhconfig.enable_cache;
 
 /**
  * 给定本子id，得到本子URL
@@ -55,11 +54,12 @@ async function getHrefsFromPage(url) {
 /**
  * 对一个nhentai本子页进行解析
  * 
- * @param {number} gid 本子id
- * @param {string} html nhentai本子网页内容
+ * @param {any} gid 本子id
+ * @param {any} [nhsql=(enable_cache ? new NHSql : null)] NHSql对象
+ * @param {boolean} [autoCloseSql=true] 是否自动关闭数据库连接（用于提升批量解析效率）
  * @returns 这个网页的本子的解析结果
  */
-async function nhResolve(gid, nhsql = (enable_cache ? new NHsql : null), autoCloseSql = true) {
+async function nhResolve(gid, nhsql = (enable_cache ? new NHSql : null), autoCloseSql = true) {
 	//先看看数据库有缓存没
 	if (enable_cache) {
 		var cache;
@@ -115,7 +115,7 @@ async function nhResolve(gid, nhsql = (enable_cache ? new NHsql : null), autoClo
 
 	//缓存至数据库
 	if (enable_cache) {
-		nhsql = new NHsql();
+		nhsql = new NHSql();
 		await nhsql.addCache(gid, result).then(() => {
 			if (autoCloseSql) nhsql.close;
 		});
@@ -133,7 +133,7 @@ async function nhResolve(gid, nhsql = (enable_cache ? new NHsql : null), autoClo
  * @param {boolean} withResponse 是否套上专用response
  * @returns 单个解析结果
  */
-exports.single = async (gid, withResponse = false) => {
+exports.single = async (gid, withResponse) => {
 	if (typeof gid != "number") gid = parseInt(gid);
 	var response;
 	var result;
@@ -173,7 +173,7 @@ exports.multi = async (url, withResponse) => {
 	});
 
 	//对每个链接都进行解析
-	var nhsql = new NHsql();
+	var nhsql = new NHSql();
 	for (var href of hrefs) {
 		var nhReg = /\/([0-9]+)\//g;
 		var gid = parseInt(nhReg.exec(href)[1]);

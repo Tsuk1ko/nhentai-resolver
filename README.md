@@ -1,4 +1,4 @@
-# nhentai-resolution
+# nhentai-resolver
 基于 Node.js 实现的 nhentai 本子信息解析，为以后的本子自动下载项目铺垫一下  
 尚处于测试阶段，还有很多需要改进的内容  
 
@@ -8,14 +8,14 @@
 学到了很多新东西，还是很开心的
 
 ## 项目情况
-已经成熟，应该不会再进行其他的改动了
+已经成熟，应该不会再进行其他太大的改动了
 
 下一步是自动下载，该功能将在另一个项目中实现
 
 ## 部署
 ```bash
-git clone https://github.com/YKilin/nhentai-resolution.git
-cd nhentai-resolution
+git clone https://github.com/YKilin/nhentai-resolver.git
+cd nhentai-resolver
 cp config.js.example config.js
 npm install
 ```
@@ -26,7 +26,7 @@ npm install
 ### 监听端口
 你可以修改监听端口，默认`8888`
 
-### 关于缓存解析结果
+### 缓存解析结果
 在配置中将`enable_cache`设置为`true`，并配置数据库信息
 
 数据库需要手动建立，但是表不需要，程序会帮你建立

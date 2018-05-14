@@ -2,10 +2,10 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-13 15:38:11 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-13 19:49:50
+ * @Last Modified time: 2018-05-15 02:49:57
  */
 const NHResult = require('../class/nhresult');
-const NHConfig = require('../config');
+const NHConfig = global.nhconfig;
 
 //数据库表名
 const reslove_db = 'resolutions';

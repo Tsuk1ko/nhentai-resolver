@@ -1,7 +1,7 @@
 {
-  "name": "nhentai-resolution",
+  "name": "nhentai-resolver",
   "version": "1.1.0",
-  "description": "nhentai resolution based on Node.js",
+  "description": "nhentai resolver based on Node.js",
   "main": "app.js",
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YKilin/nhentai-resolution.git"
+    "url": "git+https://github.com/YKilin/nhentai-resolver.git"
   },
   "keywords": [
     "nhentai"
@@ -22,7 +22,7 @@
   "author": "Jindai Kirin",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/YKilin/nhentai-resolution/issues"
+    "url": "https://github.com/YKilin/nhentai-resolver/issues"
   },
-  "homepage": "https://github.com/YKilin/nhentai-resolution#readme"
+  "homepage": "https://github.com/YKilin/nhentai-resolver#readme"
 }

@@ -2,20 +2,13 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-13 13:39:00 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-13 20:01:26
+ * @Last Modified time: 2018-05-15 02:50:50
  */
 const Koa = require('koa');
 const app = new Koa();
 
-const NHsql = require('./model/nhsql');
-const NHResponse = require('./class/nhresponse');
-const nhentai = require('./model/resolve');
-const NHConfig = require('./config');
-
-//数据库测试
-if(NHConfig.enable_cache){
-	NHsql.test();
-}
+const NHResolver = require('./nhresolver');
+NHResolver.init('./config');
 
 app.use(async ctx => {
 	//计时
@@ -23,7 +16,7 @@ app.use(async ctx => {
 	//query
 	var query = ctx.query;
 	//默认返回的json
-	var response = new NHResponse();
+	var response = NHResolver.getDefaultResponse();
 	response.msg.text = "Invalid query! Please see https://github.com/YKilin/nhentai-resolution";
 
 	if (query !== null) {
@@ -31,12 +24,12 @@ app.use(async ctx => {
 		var url = query.url;
 
 		if (typeof (gid) !== "undefined") {
-			await nhentai.single(gid, true).then(nhr => {
+			await NHResolver.byGid(gid, true).then(nhr => {
 				response = nhr;
 				response.msg.time = Date.now() - st;
 			});
 		} else if (typeof (url) !== "undefined") {
-			await nhentai.multi(url, true).then(nhr => {
+			await NHResolver.byUrl(url, true).then(nhr => {
 				response = nhr;
 				response.msg.time = Date.now() - st;
 			});
@@ -45,4 +38,4 @@ app.use(async ctx => {
 	ctx.body = response;
 });
 
-app.listen(NHConfig.port);
+app.listen(global.nhconfig.port);
