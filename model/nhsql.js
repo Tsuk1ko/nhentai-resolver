@@ -2,7 +2,7 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-13 15:38:11 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-15 02:49:57
+ * @Last Modified time: 2018-05-15 22:47:19
  */
 const NHResult = require('../class/nhresult');
 const NHConfig = global.nhconfig;
@@ -29,8 +29,8 @@ class NHsql {
 	/**
 	 * 增加解析缓存
 	 * 
-	 * @param {any} gid 本子id
-	 * @param {any} obj 缓存对象
+	 * @param {number} gid 本子id
+	 * @param {NHResult} obj 缓存对象
 	 * @returns Promise
 	 * @memberof NHsql
 	 */

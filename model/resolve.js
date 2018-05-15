@@ -2,7 +2,7 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-12 19:18:41 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-15 02:56:04
+ * @Last Modified time: 2018-05-15 22:46:30
  */
 const nhURL = 'https://nhentai.net/g/';
 const nhHost = 'https://nhentai.net';
@@ -54,8 +54,8 @@ async function getHrefsFromPage(url) {
 /**
  * 对一个nhentai本子页进行解析
  * 
- * @param {any} gid 本子id
- * @param {any} [nhsql=(enable_cache ? new NHSql : null)] NHSql对象
+ * @param {number} gid 本子id
+ * @param {NHSql} [nhsql=(enable_cache ? new NHSql : null)] NHSql对象
  * @param {boolean} [autoCloseSql=true] 是否自动关闭数据库连接（用于提升批量解析效率）
  * @returns 这个网页的本子的解析结果
  */
