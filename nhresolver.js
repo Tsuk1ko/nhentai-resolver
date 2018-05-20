@@ -2,7 +2,7 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-15 00:08:55 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-15 03:03:26
+ * @Last Modified time: 2018-05-20 15:28:40
  */
 const NHResponse = require('./class/nhresponse');
 
@@ -22,8 +22,8 @@ class NHResolver {
 	static init(config_path) {
 		global.nhconfig = require(config_path);
 
-		this.NHSql = require('./model/nhsql');
-		this.NHResolve = require('./model/resolve');
+		this.NHSql = require('./module/nhsql');
+		this.NHResolve = require('./module/resolve');
 
 		//数据库测试
 		if (global.nhconfig.enable_cache) {
