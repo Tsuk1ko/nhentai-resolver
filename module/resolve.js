@@ -2,14 +2,14 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-12 19:18:41 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-15 22:46:30
+ * @Last Modified time: 2018-05-22 19:48:33
  */
 const nhURL = 'https://nhentai.net/g/';
 const nhHost = 'https://nhentai.net';
 //const nhImgURL = 'https://i.nhentai.net/galleries/';
 
 const cheerio = require('cheerio');
-const gethttp = require('./gethttp');
+const GetHtml = require('./gethtml');
 const NHResult = require('../class/nhresult');
 const NHResponse = require('../class/nhresponse');
 const NHSql = require('./nhsql');
@@ -35,7 +35,7 @@ function gidToUrl(gid) {
  */
 async function getHrefsFromPage(url) {
 	var html;
-	await gethttp.https(url).then(nhhtml => {
+	await GetHtml.get(url).then(nhhtml => {
 		html = nhhtml;
 	});
 	var $ = cheerio.load(html, {
@@ -75,7 +75,7 @@ async function nhResolve(gid, nhsql = (enable_cache ? new NHSql : null), autoClo
 
 	//获取本子页html内容
 	var html;
-	await gethttp.https(gidToUrl(gid)).then(async nhhtml => {
+	await GetHtml.get(gidToUrl(gid)).then(async nhhtml => {
 		html = nhhtml;
 	});
 
