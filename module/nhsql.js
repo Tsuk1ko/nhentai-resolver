@@ -2,7 +2,7 @@
  * @Author: JindaiKirin 
  * @Date: 2018-05-13 15:38:11 
  * @Last Modified by: JindaiKirin
- * @Last Modified time: 2018-05-15 22:47:19
+ * @Last Modified time: 2018-07-12 10:42:23
  */
 const NHResult = require('../class/nhresult');
 const NHConfig = global.nhconfig;
@@ -84,6 +84,7 @@ class NHsql {
 		var co = require('co');
 		return co(function* () {
 			yield mysql.query('CREATE TABLE IF NOT EXISTS `' + reslove_db + '` ( `gid` INT NOT NULL , `data` TEXT NOT NULL , `date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`gid`)) ENGINE = InnoDB;');
+			yield mysql.end();
 		});
 	}
 }
